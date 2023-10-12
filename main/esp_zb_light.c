@@ -170,7 +170,7 @@ static void esp_zb_task(void *pvParameters)
     uint32_t StackVersion = 0x0002;
     uint32_t HWVersion = 0x0002;
     uint8_t ManufacturerName[] = {14, 'G', 'a', 'm', 'm', 'a', 'T', 'r', 'o', 'n', 'i', 'q', 'u', 'e', 's'}; // warning: this is in format {length, 'string'} :
-    uint8_t ModelIdentifier[] = {4, 'D', 'e', 'm', 'o'};
+    uint8_t ModelIdentifier[] = {13, 'E', 'S', 'P', '3', '2', '-', 'C', '6', ' ', 'D', 'e', 'm', 'o'};
     uint8_t DateCode[] = {8, '2', '0', '2', '3', '0', '8', '2', '6'};
     esp_zb_attribute_list_t *esp_zb_basic_cluster = esp_zb_basic_cluster_create(&basic_cluster_cfg);
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_APPLICATION_VERSION_ID, &ApplicationVersion);
@@ -192,14 +192,23 @@ static void esp_zb_task(void *pvParameters)
     };
     esp_zb_attribute_list_t *esp_zb_on_off_cluster = esp_zb_on_off_cluster_create(&on_off_cfg);
 
-    // ------------------------------ Cluster BINARY INPUT ------------------------------
-    esp_zb_binary_input_cluster_cfg_t binary_input_cfg = {
+    // ------------------------------ Cluster BINARY INPUT 1 ------------------------------
+    esp_zb_binary_input_cluster_cfg_t binary_input1_cfg = {
         .out_of_service = 0,
         .status_flags = 0,
     };
-    uint8_t present_value = 0;
-    esp_zb_attribute_list_t *esp_zb_binary_input_cluster = esp_zb_binary_input_cluster_create(&binary_input_cfg);
-    esp_zb_binary_input_cluster_add_attr(esp_zb_binary_input_cluster, ESP_ZB_ZCL_ATTR_BINARY_INPUT_PRESENT_VALUE_ID, &present_value);
+    uint8_t present_value_1 = 0;
+    esp_zb_attribute_list_t *esp_zb_binary_input1_cluster = esp_zb_binary_input_cluster_create(&binary_input1_cfg);
+    esp_zb_binary_input_cluster_add_attr(esp_zb_binary_input1_cluster, ESP_ZB_ZCL_ATTR_BINARY_INPUT_PRESENT_VALUE_ID, &present_value_1);
+
+    // ------------------------------ Cluster BINARY INPUT 2 ------------------------------
+    esp_zb_binary_input_cluster_cfg_t binary_input2_cfg = {
+        .out_of_service = 0,
+        .status_flags = 0,
+    };
+    uint8_t present_value_2 = 0;
+    esp_zb_attribute_list_t *esp_zb_binary_input2_cluster = esp_zb_binary_input_cluster_create(&binary_input2_cfg);
+    esp_zb_binary_input_cluster_add_attr(esp_zb_binary_input2_cluster, ESP_ZB_ZCL_ATTR_BINARY_INPUT_PRESENT_VALUE_ID, &present_value_2);
 
     // ------------------------------ Cluster Temperature ------------------------------
     esp_zb_temperature_meas_cluster_cfg_t temperature_meas_cfg = {
@@ -222,9 +231,11 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_cluster_list_add_basic_cluster(esp_zb_cluster_list, esp_zb_basic_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
     esp_zb_cluster_list_add_identify_cluster(esp_zb_cluster_list, esp_zb_identify_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
     esp_zb_cluster_list_add_on_off_cluster(esp_zb_cluster_list, esp_zb_on_off_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
-    esp_zb_cluster_list_add_binary_input_cluster(esp_zb_cluster_list, esp_zb_binary_input_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
+    esp_zb_cluster_list_add_binary_input_cluster(esp_zb_cluster_list, esp_zb_binary_input1_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
+    esp_zb_cluster_list_add_binary_input_cluster(esp_zb_cluster_list, esp_zb_binary_input2_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
     esp_zb_cluster_list_add_temperature_meas_cluster(esp_zb_cluster_list, esp_zb_temperature_meas_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
     esp_zb_cluster_list_add_humidity_meas_cluster(esp_zb_cluster_list, esp_zb_humidity_meas_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
+    
 
     // ------------------------------ Create endpoint list ------------------------------
     esp_zb_ep_list_t *esp_zb_ep_list = esp_zb_ep_list_create();
@@ -251,7 +262,8 @@ void app_main(void)
     /* hardware related and device init */
     xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 5, NULL);
 
-    gpio_set_direction(GPIO_NUM_12, GPIO_MODE_INPUT);
+    gpio_set_direction(GPIO_NUM_10, GPIO_MODE_INPUT);
+    gpio_set_direction(GPIO_NUM_11, GPIO_MODE_INPUT);
 
     gpio_set_direction(GPIO_NUM_0, GPIO_MODE_OUTPUT);
     gpio_set_level(GPIO_NUM_0, 0);
