@@ -241,17 +241,16 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_cluster_list_add_binary_input_cluster(esp_zb_cluster_list2, esp_zb_binary_input2_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
     // ------------------------------ Create endpoint list ------------------------------
+    esp_zb_ep_list_t *esp_zb_ep_list = esp_zb_ep_list_create();
+
     // EP1
-    esp_zb_ep_list_t *esp_zb_ep1_list = esp_zb_ep_list_create();
-    esp_zb_ep_list_add_ep(esp_zb_ep1_list, esp_zb_cluster_list, HA_ESP_LIGHT_ENDPOINT, ESP_ZB_AF_HA_PROFILE_ID, ESP_ZB_HA_ON_OFF_LIGHT_DEVICE_ID);
+    esp_zb_ep_list_add_ep(esp_zb_ep_list , esp_zb_cluster_list, HA_ESP_LIGHT_ENDPOINT, ESP_ZB_AF_HA_PROFILE_ID, ESP_ZB_HA_ON_OFF_LIGHT_DEVICE_ID);
     
     // EP2
-    esp_zb_ep_list_t *esp_zb_ep2_list = esp_zb_ep_list_create();
-    esp_zb_ep_list_add_ep(esp_zb_ep2_list, esp_zb_cluster_list2, HA_ESP_LIGHT_ENDPOINT, ESP_ZB_AF_HA_PROFILE_ID, ESP_ZB_HA_ON_OFF_LIGHT_DEVICE_ID);
+    esp_zb_ep_list_add_ep(esp_zb_ep_list , esp_zb_cluster_list2, HA_ESP_LIGHT_ENDPOINT, ESP_ZB_AF_HA_PROFILE_ID, ESP_ZB_HA_ON_OFF_LIGHT_DEVICE_ID);
 
     // ------------------------------ Register Device ------------------------------
-    esp_zb_device_register(esp_zb_ep1_list);
-    esp_zb_device_register(esp_zb_ep2_list);
+    esp_zb_device_register(esp_zb_ep_list);
     esp_zb_core_action_handler_register(zb_action_handler);
     esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK);
 
